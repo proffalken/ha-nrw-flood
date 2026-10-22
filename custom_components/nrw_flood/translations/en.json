@@ -1,0 +1,130 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Natural Resources Wales flood data",
+        "description": "Each NRW API has its own subscription key from the NRW API portal ({portal_url}). Enter the keys for the APIs you want: at least one is needed.",
+        "data": {
+          "warnings_api_key": "Live Flood Warnings and Alerts API key",
+          "levels_api_key": "River Level, Rainfall and Sea Data API key",
+          "forecast_api_key": "5-day Flood Risk API key",
+          "latitude": "Latitude",
+          "longitude": "Longitude",
+          "radius_km": "Search radius"
+        },
+        "data_description": {
+          "radius_km": "Flood areas and river level stations within this distance of the location are offered in the next steps."
+        }
+      },
+      "areas": {
+        "title": "Flood areas",
+        "description": "Choose the flood alert and flood warning areas to watch.",
+        "data": {
+          "flood_areas": "Flood areas"
+        }
+      },
+      "areas_manual": {
+        "title": "Flood area codes",
+        "description": "DataMapWales, which lists the flood areas, is unavailable right now. Enter the codes of the flood alert and flood warning areas to watch, separated by commas (for example 103WAFwyemon, 103FWF011a). Each area's code is shown on its page on the NRW flood warnings service. You can change them later in the integration's options.",
+        "data": {
+          "flood_areas": "Flood area codes"
+        }
+      },
+      "stations": {
+        "title": "River level stations",
+        "description": "Choose the river level stations to track.",
+        "data": {
+          "stations": "Stations"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Replace NRW API keys",
+        "description": "NRW rejected one of the stored keys. Enter a new key for any API whose key has changed, and leave the others blank to keep them.",
+        "data": {
+          "warnings_api_key": "Live Flood Warnings and Alerts API key",
+          "levels_api_key": "River Level, Rainfall and Sea Data API key",
+          "forecast_api_key": "5-day Flood Risk API key"
+        }
+      }
+    },
+    "error": {
+      "no_keys": "Enter at least one API key.",
+      "invalid_auth": "NRW rejected this key. Check it is the key for this API.",
+      "cannot_connect": "Could not reach the NRW API. Try again later.",
+      "no_areas": "No flood alert or warning areas are within the search radius. Try a larger radius.",
+      "no_stations": "No river level stations are within the search radius. Try a larger radius.",
+      "unknown": "Unexpected error. Check the Home Assistant log.",
+      "no_codes": "Enter at least one flood area code."
+    },
+    "abort": {
+      "already_configured": "This location is already set up.",
+      "reauth_successful": "The keys have been updated."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Flood areas and stations",
+        "data": {
+          "flood_areas": "Flood areas",
+          "stations": "River level stations"
+        },
+        "description": "If DataMapWales is unavailable, the flood areas are shown as a comma-separated list of codes."
+      }
+    },
+    "abort": {
+      "cannot_connect": "Could not reach NRW or DataMapWales to list the choices. Try again later.",
+      "nothing_to_choose": "Neither the warnings API nor the river level API is configured, so there is nothing to choose."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "warning_level": {
+        "name": "Warning level",
+        "state": {
+          "none": "None",
+          "alert": "Flood alert",
+          "warning": "Flood warning",
+          "severe": "Severe flood warning"
+        }
+      },
+      "active_warnings": {
+        "name": "Active warnings"
+      },
+      "level": {
+        "name": "Level"
+      },
+      "rate_of_change": {
+        "name": "Rate of change"
+      },
+      "trend": {
+        "name": "Trend",
+        "state": {
+          "rising": "Rising",
+          "steady": "Steady",
+          "falling": "Falling"
+        }
+      },
+      "last_reading": {
+        "name": "Last reading"
+      },
+      "forecast_issued": {
+        "name": "Forecast issued"
+      },
+      "areas_at_risk": {
+        "name": "Areas at risk"
+      }
+    },
+    "binary_sensor": {
+      "flood_alert": {
+        "name": "Flood alert"
+      },
+      "flood_warning": {
+        "name": "Flood warning"
+      },
+      "severe_flood_warning": {
+        "name": "Severe flood warning"
+      }
+    }
+  }
+}

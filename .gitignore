@@ -36,3 +36,6 @@ uv.lock.bak
 # Home Assistant local dev config (if a test HA instance is ever run from here)
 config/.storage/
 config/home-assistant.log
+
+# Raw live captures (trim before promoting to a fixture)
+tests/fixtures/captured/

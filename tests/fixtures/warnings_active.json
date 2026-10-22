@@ -1,0 +1,71 @@
+{
+  "_synthetic": "Built by hand: no warnings were in force when this suite was written (2026-10-22). Field names and the SEVERITYVALUE scale (1 severe, 2 warning, 3 alert, 4 no longer in force) follow two independent open-source NRW v3 clients. Replace with a real capture (scripts/capture_fixtures.py) when warnings are next in force.",
+  "type": "FeatureCollection",
+  "crs": {"type": "name", "properties": {"name": "EPSG:4326"}},
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {"type": "Point", "coordinates": [-2.7134, 51.8121]},
+      "properties": {
+        "FWACODE": "103WAFwyemon",
+        "DESCRIPTION": "Rivers Wye and Monnow in Monmouthshire",
+        "AREA": "South East",
+        "SEVERITY": "Flood Alert",
+        "SEVERITYVALUE": 3,
+        "TIDAL": "False",
+        "TIMERAISED": "2026-10-22T06:30:00",
+        "SEVERITY_CHANGED": "2026-10-22T06:30:00",
+        "RIM_CHANGED": "2026-10-22T07:00:00",
+        "RIM_ENGLISH": "River levels are rising on the Wye and Monnow."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {"type": "Point", "coordinates": [-2.7102, 51.8105]},
+      "properties": {
+        "FWACODE": "103FWF011a",
+        "DESCRIPTION": "Rivers Wye and Monnow at Monmouth, defended areas",
+        "AREA": "South East",
+        "SEVERITY": "Flood Warning",
+        "SEVERITYVALUE": 2,
+        "TIDAL": "False",
+        "TIMERAISED": "2026-10-22T09:15:00",
+        "SEVERITY_CHANGED": "2026-10-22T09:15:00",
+        "RIM_CHANGED": "2026-10-22T09:15:00",
+        "RIM_ENGLISH": "Flooding is expected. Immediate action required."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {"type": "Point", "coordinates": [-2.7240, 51.8160]},
+      "properties": {
+        "FWACODE": "103FWF010a",
+        "DESCRIPTION": "River Monnow at Forge Road, Osbaston",
+        "AREA": "South East",
+        "SEVERITY": "Warning no longer in force",
+        "SEVERITYVALUE": 4,
+        "TIDAL": "False",
+        "TIMERAISED": "2026-10-21T18:00:00",
+        "SEVERITY_CHANGED": "2026-10-22T08:00:00",
+        "RIM_CHANGED": "2026-10-22T08:00:00",
+        "RIM_ENGLISH": "The flood warning has been removed."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {"type": "Point", "coordinates": [-3.3420, 51.6010]},
+      "properties": {
+        "FWACODE": "102FWF043",
+        "DESCRIPTION": "River Taff at Pontypridd",
+        "AREA": "South East",
+        "SEVERITY": "Severe Flood Warning",
+        "SEVERITYVALUE": 1,
+        "TIDAL": "True",
+        "TIMERAISED": "2026-10-22T10:00:00",
+        "SEVERITY_CHANGED": "2026-10-22T10:00:00",
+        "RIM_CHANGED": "2026-10-22T10:00:00",
+        "RIM_ENGLISH": "Danger to life."
+      }
+    }
+  ]
+}

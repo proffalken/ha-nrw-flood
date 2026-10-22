@@ -1,0 +1,157 @@
+[
+  {
+    "coordinates": {
+      "latitude": 51.797403,
+      "longitude": -2.7228187
+    },
+    "latitude": 51.797403,
+    "longitude": -2.7228187,
+    "location": 4021,
+    "nameEN": "Mitchel Troy",
+    "nameCY": "Llanfihangel Troddi",
+    "statusEN": "Online",
+    "statusCY": "Ar-lein",
+    "url": "rivers-and-seas.naturalresources.wales/station/4021",
+    "ngr": "SO5025011220",
+    "titleEn": "Trothy at Mitchel Troy",
+    "titleCy": "Afon Troddi yn Llanfihangel Troddi",
+    "stationId": 4021,
+    "parameters": [
+      {
+        "stationId": 4021,
+        "parameter": 163,
+        "paramNameEN": "River Level",
+        "paramNameCY": "Lefel yr afon",
+        "parameterStatusEN": "Level Falling",
+        "parameterStatusCY": "Lefel cwympo",
+        "units": "m",
+        "latestValue": 0.175,
+        "latestTime": "2026-10-22T14:45:00Z"
+      }
+    ]
+  },
+  {
+    "coordinates": {
+      "latitude": 51.814631,
+      "longitude": -2.703235
+    },
+    "latitude": 51.814631,
+    "longitude": -2.703235,
+    "location": 4023,
+    "nameEN": "Monmouth",
+    "nameCY": "Trefynwy",
+    "statusEN": "Online",
+    "statusCY": "Ar-lein",
+    "url": "rivers-and-seas.naturalresources.wales/station/4023",
+    "ngr": "SO5161913123",
+    "titleEn": "Wye at Monmouth",
+    "titleCy": "Afon Gwy yn Nhrefynwy",
+    "stationId": 4023,
+    "parameters": [
+      {
+        "stationId": 4023,
+        "parameter": 199,
+        "paramNameEN": "River Level",
+        "paramNameCY": "Lefel yr afon",
+        "parameterStatusEN": "Level Rising",
+        "parameterStatusCY": "Lefel codi",
+        "units": "m",
+        "latestValue": 0.868,
+        "latestTime": "2026-10-22T15:00:00Z"
+      }
+    ]
+  },
+  {
+    "coordinates": {
+      "latitude": 51.808838,
+      "longitude": -2.7201007
+    },
+    "latitude": 51.808838,
+    "longitude": -2.7201007,
+    "location": 4024,
+    "nameEN": "Monnow Gate",
+    "nameCY": "Porth Trefynwy",
+    "statusEN": "Online",
+    "statusCY": "Ar-lein",
+    "url": "rivers-and-seas.naturalresources.wales/station/4024",
+    "ngr": "SO5045012490",
+    "titleEn": "Monnow at Monnow Gate",
+    "titleCy": "Afon Mynwy ym Mhorth Trefynwy",
+    "stationId": 4024,
+    "parameters": [
+      {
+        "stationId": 4024,
+        "parameter": 106,
+        "paramNameEN": "River Level",
+        "paramNameCY": "Lefel yr afon",
+        "parameterStatusEN": "Level Rising",
+        "parameterStatusCY": "Lefel codi",
+        "units": "m",
+        "latestValue": 1.825,
+        "latestTime": "2026-10-22T15:00:00Z"
+      }
+    ]
+  },
+  {
+    "coordinates": {
+      "latitude": 51.796308,
+      "longitude": -2.6864046
+    },
+    "latitude": 51.796308,
+    "longitude": -2.6864046,
+    "location": 4028,
+    "nameEN": "Redbrook",
+    "nameCY": "Redbrook",
+    "statusEN": "Online",
+    "statusCY": "Ar-lein",
+    "url": "rivers-and-seas.naturalresources.wales/station/4028",
+    "ngr": "SO5276011074",
+    "titleEn": "Wye at Redbrook",
+    "titleCy": "Afon Gwy yn Redbrook",
+    "stationId": 4028,
+    "parameters": [
+      {
+        "stationId": 4028,
+        "parameter": 201,
+        "paramNameEN": "River Level",
+        "paramNameCY": "Lefel yr afon",
+        "parameterStatusEN": "Level Rising",
+        "parameterStatusCY": "Lefel codi",
+        "units": "m",
+        "latestValue": 0.439,
+        "latestTime": "2026-10-22T15:00:00Z"
+      }
+    ]
+  },
+  {
+    "coordinates": {
+      "latitude": 51.881766,
+      "longitude": -2.7886765
+    },
+    "latitude": 51.881766,
+    "longitude": -2.7886765,
+    "location": 4049,
+    "nameEN": "Skenfrith",
+    "nameCY": "Ynysgynwraidd",
+    "statusEN": "Online",
+    "statusCY": "Ar-lein",
+    "url": "rivers-and-seas.naturalresources.wales/station/4049",
+    "ngr": "SO4581020650",
+    "titleEn": "Monnow at Skenfrith",
+    "titleCy": "Afon Mynwy yn Ynysgynwraidd",
+    "stationId": 4049,
+    "parameters": [
+      {
+        "stationId": 4049,
+        "parameter": 107,
+        "paramNameEN": "River Level",
+        "paramNameCY": "Lefel yr afon",
+        "parameterStatusEN": "Level Steady",
+        "parameterStatusCY": "Lefel Sefydlog",
+        "units": "m",
+        "latestValue": 0.072,
+        "latestTime": "2026-10-22T15:00:00Z"
+      }
+    ]
+  }
+]
