@@ -74,9 +74,30 @@ function forecastContent(issuedId, areasId) {
   return `{% set issued = states('${issuedId}') %}
 {{ state_attr('${issuedId}', 'summary') or 'No forecast summary is available.' }}
 
+NRW's forecast covers the whole of Wales and doesn't name areas. Its maps show the risk area by area, from Very Low to High.
+
 {% set days = state_attr('${issuedId}', 'days') or [] %}
 {% if days %}Covers {{ days | first }} to {{ days | last }}.{% endif %}
 Issued {{ as_timestamp(issued) | timestamp_custom('${TIME_FORMAT}') if issued not in ['unknown', 'unavailable'] else 'at an unknown time' }}.${areas}`;
+}
+
+// A row of small maps, one per forecast day, labelled with the weekday.
+function forecastMaps(hass, entities) {
+  const cards = [];
+  for (let n = 1; n <= 5; n++) {
+    const id = byKey(entities, `forecast_map_day_${n}`);
+    if (!id) continue;
+    const day = hass.states?.[id]?.attributes?.day;
+    cards.push({
+      type: "picture-entity",
+      entity: id,
+      name: day ? day.slice(0, 3) : `Day ${n}`,
+      show_state: false,
+      show_name: true,
+    });
+  }
+  if (!cards.length) return null;
+  return { type: "grid", columns: cards.length, square: false, cards, grid_options: { columns: 12 } };
 }
 
 function gaugeCard(entityId, thresholds) {
@@ -250,13 +271,13 @@ export async function generateDashboard(config, hass) {
 
   const issuedId = byKey(entities, "forecast_issued");
   if (issuedId) {
-    sections.push({
-      type: "grid",
-      cards: [
-        { type: "heading", heading: "5-day flood risk forecast" },
-        { type: "markdown", content: forecastContent(issuedId, byKey(entities, "areas_at_risk")) },
-      ],
-    });
+    const cards = [
+      { type: "heading", heading: "Wales-wide 5-day forecast" },
+      { type: "markdown", content: forecastContent(issuedId, byKey(entities, "areas_at_risk")) },
+    ];
+    const maps = forecastMaps(hass, entities);
+    if (maps) cards.push(maps);
+    sections.push({ type: "grid", cards });
   }
 
   sections.push({

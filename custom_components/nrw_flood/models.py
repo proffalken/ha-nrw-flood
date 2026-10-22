@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+import base64
+import binascii
+from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -267,19 +269,43 @@ class Forecast:
     issued: datetime | None
     summary: str | None
     days: list[str]
+    # One PNG map per entry in days (None where NRW sent no usable image).
+    # Each is a few hundred kilobytes, so they're kept out of the repr.
+    maps: list[bytes | None] = field(default_factory=list, repr=False)
 
 
 _DAY_KEYS = ("One", "Two", "Three", "Four", "Five")
+_PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
+
+
+def _decode_png(value: Any) -> bytes | None:
+    """Decode a base64 PNG, with or without a data: URI prefix."""
+    if not isinstance(value, str) or not value.strip():
+        return None
+    if value.startswith("data:"):
+        value = value.partition(",")[2]
+    try:
+        image = base64.b64decode(value, validate=True)
+    except binascii.Error, ValueError:
+        return None
+    return image if image.startswith(_PNG_SIGNATURE) else None
 
 
 def parse_forecast(payload: Any) -> Forecast:
-    """Parse the forecast summary, dropping the large map images."""
+    """Parse the forecast summary and its daily risk maps."""
     data = payload if isinstance(payload, dict) else {}
-    days = [_text(data.get(f"Day{n}String_en")) for n in _DAY_KEYS]
+    days: list[str] = []
+    maps: list[bytes | None] = []
+    for n in _DAY_KEYS:
+        day = _text(data.get(f"Day{n}String_en"))
+        if day:
+            days.append(day)
+            maps.append(_decode_png(data.get(f"Day{n}Image")))
     return Forecast(
         issued=parse_nrw_time(data.get("IssueDate")),
         summary=_text(data.get("Summary_en")),
-        days=[d for d in days if d],
+        days=days,
+        maps=maps,
     )
 
 

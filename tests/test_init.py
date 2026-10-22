@@ -2,6 +2,7 @@
 
 from datetime import UTC, datetime
 
+from homeassistant.components.image import async_get_image
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.helpers import entity_registry as er
 from pytest_homeassistant_custom_component.common import MockConfigEntry
@@ -207,3 +208,42 @@ async def test_diagnostics_redacts_keys(
     assert diag["warnings"]["level"] == "warning"
     assert set(diag["levels"]) == {"4023", "4024"}
     assert diag["forecast"]["summary"].startswith("Local inland flooding")
+
+
+async def test_forecast_map_images(hass, mock_config_entry, aioclient_mock) -> None:
+    _mock_all(aioclient_mock)
+    await _setup(hass, mock_config_entry)
+
+    states = [_state(hass, f"_forecast_map_day_{n}", "image") for n in range(1, 6)]
+    assert [s.attributes["day"] for s in states] == [
+        "Thursday 22 October 2026",
+        "Friday 23 October 2026",
+        "Saturday 24 October 2026",
+        "Sunday 25 October 2026",
+        "Monday 26 October 2026",
+    ]
+    # The image's state is when NRW issued the forecast.
+    assert datetime.fromisoformat(states[0].state) == datetime(
+        2026, 10, 22, 8, 30, tzinfo=UTC
+    )
+
+    assert states[0].attributes["entity_picture"].startswith("/api/image_proxy/")
+
+    one = await async_get_image(hass, states[0].entity_id)
+    three = await async_get_image(hass, states[2].entity_id)
+    assert one.content_type == "image/png"
+    assert one.content.startswith(b"\x89PNG")
+    assert one.content != three.content
+
+
+async def test_forecast_map_without_an_image_is_unavailable(
+    hass, mock_config_entry, aioclient_mock
+) -> None:
+    payload = load_fixture("forecast_summary.json")
+    payload["DayFiveImage"] = ""
+    aioclient_mock.get(FORECAST_URL, json=payload)
+    _mock_all(aioclient_mock)
+    await _setup(hass, mock_config_entry)
+
+    assert _state(hass, "_forecast_map_day_5", "image").state == "unavailable"
+    assert _state(hass, "_forecast_map_day_1", "image").state != "unavailable"

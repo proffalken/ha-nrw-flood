@@ -47,10 +47,24 @@ function makeHass({ withForecast = true, withWarnings = true } = {}) {
     list.push(
       entity("sensor.nrw_flood_risk_forecast_forecast_issued", "forecast_issued", "dev_fc"),
       entity("sensor.nrw_flood_risk_forecast_areas_at_risk", "areas_at_risk", "dev_fc"),
+      ...[1, 2, 3, 4, 5].map((n) =>
+        entity(`image.nrw_flood_risk_forecast_flood_risk_map_day_${n}`, `forecast_map_day_${n}`, "dev_fc"),
+      ),
     );
   }
   const device = (name, entry = ENTRY) => ({ name, config_entries: [entry] });
+  const days = ["Thursday 22 October 2026", "Friday 23 October 2026", "Saturday 24 October 2026",
+    "Sunday 25 October 2026", "Monday 26 October 2026"];
+  const states = withForecast
+    ? Object.fromEntries(
+        days.map((day, i) => [
+          `image.nrw_flood_risk_forecast_flood_risk_map_day_${i + 1}`,
+          { state: "2026-10-22T08:30:00+00:00", attributes: { day } },
+        ]),
+      )
+    : {};
   return {
+    states,
     entities: Object.fromEntries(list.map((e) => [e.entity_id, e])),
     devices: {
       dev_wye: device("Wye at Monmouth"),
@@ -197,6 +211,35 @@ describe("generateDashboard", () => {
     const [view] = (await generateDashboard({}, makeHass())).views;
     const text = findCards(view, "markdown").map((c) => c.content).join("\n");
     assert.match(text, /sensor\.nrw_flood_risk_forecast_forecast_issued/);
+  });
+
+  it("labels the forecast as Wales-wide and says NRW doesn't name areas", async () => {
+    const [view] = (await generateDashboard({}, makeHass())).views;
+    const section = view.sections.find((s) => /forecast/i.test(s.cards[0].heading || ""));
+    assert.equal(section.cards[0].heading, "Wales-wide 5-day forecast");
+    const text = section.cards.filter((c) => c.type === "markdown").map((c) => c.content).join("\n");
+    assert.match(text, /doesn't name areas/);
+  });
+
+  it("shows a small map for each forecast day, labelled with the weekday", async () => {
+    const [view] = (await generateDashboard({}, makeHass())).views;
+    const maps = findCards(view, "grid").flatMap((g) => g.cards).filter((c) => c.type === "picture-entity");
+    assert.deepEqual(
+      maps.map((c) => [c.entity, c.name]),
+      [1, 2, 3, 4, 5].map((n, i) => [
+        `image.nrw_flood_risk_forecast_flood_risk_map_day_${n}`,
+        ["Thu", "Fri", "Sat", "Sun", "Mon"][i],
+      ]),
+    );
+    assert.ok(maps.every((c) => c.show_state === false));
+  });
+
+  it("labels a map by its day number when the date isn't known", async () => {
+    const hass = makeHass();
+    hass.states = {};
+    const [view] = (await generateDashboard({}, hass)).views;
+    const maps = findCards(view, "grid").flatMap((g) => g.cards).filter((c) => c.type === "picture-entity");
+    assert.equal(maps[0].name, "Day 1");
   });
 
   it("leaves out warnings and forecast sections when those APIs aren't configured", async () => {

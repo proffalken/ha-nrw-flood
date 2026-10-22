@@ -1,10 +1,10 @@
 {
   "IssueDate": "10/22/2026 09:30:00 AM",
-  "DayOneImage": "",
-  "DayTwoImage": "",
-  "DayThreeImage": "",
-  "DayFourImage": "",
-  "DayFiveImage": "",
+  "DayOneImage": "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAE0lEQVR4nGNcfJ0BDpgYGIjhAABLewGCZmgxLAAAAABJRU5ErkJggg==",
+  "DayTwoImage": "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAE0lEQVR4nGNcfJ0BDpgYGIjhAABLewGCZmgxLAAAAABJRU5ErkJggg==",
+  "DayThreeImage": "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAE0lEQVR4nGP8v58BDpgYGIjhAABZHwHGnbr71gAAAABJRU5ErkJggg==",
+  "DayFourImage": "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAE0lEQVR4nGNcfJ0BDpgYGIjhAABLewGCZmgxLAAAAABJRU5ErkJggg==",
+  "DayFiveImage": "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAE0lEQVR4nGNcfJ0BDpgYGIjhAABLewGCZmgxLAAAAABJRU5ErkJggg==",
   "DayOneString_en": "Thursday 22 October 2026",
   "DayOneString_cy": "Dydd Iau 22 Hydref 2026",
   "DayTwoString_en": "Friday 23 October 2026",
@@ -50,5 +50,6 @@
       "RiskLevelAdvice_en": "Flooding is possible - be prepared. Stay vigilant. Water on roads - take care when driving.",
       "RiskLevelAdvice_cy": "Mae llifogydd yn bosibl - byddwch yn barod. Arhoswch yn wyliadwrus. Dwr ar y ffyrdd - byddwch yn ofalus wrth yrru."
     }
-  ]
+  ],
+  "_note": "Real capture with the map images replaced by 4x4 PNGs (day three differs)."
 }

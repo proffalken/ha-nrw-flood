@@ -213,6 +213,41 @@ def test_parse_forecast() -> None:
     ]
 
 
+PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
+
+
+def test_parse_forecast_keeps_one_map_per_day() -> None:
+    forecast = parse_forecast(load_fixture("forecast_summary.json"))
+
+    assert len(forecast.maps) == len(forecast.days) == 5
+    assert all(m.startswith(PNG_SIGNATURE) for m in forecast.maps)
+    # Day three's map differs in the fixture.
+    assert forecast.maps[2] != forecast.maps[0]
+    assert forecast.maps[1] == forecast.maps[0]
+
+
+def test_parse_forecast_map_edge_cases() -> None:
+    payload = load_fixture("forecast_summary.json")
+    good = payload["DayOneImage"]
+    payload["DayOneImage"] = f"data:image/png;base64,{good}"
+    payload["DayTwoImage"] = ""
+    payload["DayThreeImage"] = "not base64 at all!"
+    payload["DayFourImage"] = "aGVsbG8="  # valid base64, but not a PNG
+
+    maps = parse_forecast(payload).maps
+
+    assert maps[0].startswith(PNG_SIGNATURE)
+    assert maps[1] is None
+    assert maps[2] is None
+    assert maps[3] is None
+    assert maps[4].startswith(PNG_SIGNATURE)
+
+
+def test_forecast_maps_stay_out_of_its_repr() -> None:
+    forecast = parse_forecast(load_fixture("forecast_summary.json"))
+    assert "PNG" not in repr(forecast)
+
+
 def test_parse_areas_at_risk() -> None:
     assert parse_areas_at_risk(load_fixture("areas_at_risk_empty.json")) == []
     assert parse_areas_at_risk([{"a": 1}]) == [{"a": 1}]

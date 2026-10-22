@@ -101,6 +101,10 @@ and are not comparable between stations. NRW describes the data as unverified.
 | -------------------------- | ------------------------------------------------------------------------------------------------- |
 | `sensor.…_forecast_issued` | When the current forecast was issued. Attributes: `summary` text and the 5 `days`.               |
 | `sensor.…_areas_at_risk`   | Number of entries in NRW's areas-at-risk list. Attribute `areas` holds them as NRW returns them. |
+| `image.…_flood_risk_map_day_1` … `_day_5` | NRW's risk map for each forecast day. Attribute `day` gives the date. |
+
+The summary text covers the whole of Wales and doesn't name areas. The maps
+are the only place NRW shows the risk area by area.
 
 Polled every hour. The format of the areas-at-risk entries is not documented,
 and the list was empty while this integration was written, so the entries are
@@ -122,7 +126,7 @@ gauges you add later appear without editing it. It shows:
   falling, and its rate of change. If you set reference levels for the
   gauge, the card also says how far the river is below the next one (or
   which one it is above) and shows a gauge with coloured bands
-- the 5-day forecast summary
+- the Wales-wide 5-day forecast summary, with a small risk map for each day
 - links to NRW, Floodline and each gauge's page
 
 History graphs are off by default to keep the dashboard quick to read. Set
