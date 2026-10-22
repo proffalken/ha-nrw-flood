@@ -25,7 +25,7 @@ from .const import (
 from .coordinator import ForecastCoordinator, LevelsCoordinator, WarningsCoordinator
 from .dashboard import async_register_dashboard_strategy
 
-PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.BINARY_SENSOR]
+PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.BINARY_SENSOR, Platform.IMAGE]
 
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 

@@ -125,6 +125,23 @@
       "severe_flood_warning": {
         "name": "Severe flood warning"
       }
+    },
+    "image": {
+      "forecast_map_day_1": {
+        "name": "Flood risk map day 1"
+      },
+      "forecast_map_day_2": {
+        "name": "Flood risk map day 2"
+      },
+      "forecast_map_day_3": {
+        "name": "Flood risk map day 3"
+      },
+      "forecast_map_day_4": {
+        "name": "Flood risk map day 4"
+      },
+      "forecast_map_day_5": {
+        "name": "Flood risk map day 5"
+      }
     }
   }
 }
