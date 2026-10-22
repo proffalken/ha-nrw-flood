@@ -1,0 +1,121 @@
+{
+  "coordinates": {
+    "latitude": 51.814631,
+    "longitude": -2.703235
+  },
+  "location": 4023,
+  "nameEN": "Monmouth",
+  "nameCY": "Trefynwy",
+  "statusEN": "Online",
+  "statusCY": "Ar-lein",
+  "url": "rivers-and-seas.naturalresources.wales/station/4023",
+  "ngr": "SO5161913123",
+  "parameter": 199,
+  "paramNameEN": "River Level",
+  "paramNameCY": "Lefel yr afon",
+  "titleEN": "Wye at Monmouth",
+  "titleCY": "Afon Gwy yn Nhrefynwy",
+  "parameterStatusEN": "Level Rising",
+  "parameterStatusCY": "Lefel codi",
+  "units": "m",
+  "latitude": 51.814631,
+  "longitude": -2.703235,
+  "parameterReadings": [
+    {
+      "value": 0.861,
+      "time": "2026-10-22T09:30:00Z"
+    },
+    {
+      "value": 0.862,
+      "time": "2026-10-22T09:45:00Z"
+    },
+    {
+      "value": 0.862,
+      "time": "2026-10-22T10:00:00Z"
+    },
+    {
+      "value": 0.861,
+      "time": "2026-10-22T10:15:00Z"
+    },
+    {
+      "value": 0.863,
+      "time": "2026-10-22T10:30:00Z"
+    },
+    {
+      "value": 0.862,
+      "time": "2026-10-22T10:45:00Z"
+    },
+    {
+      "value": 0.863,
+      "time": "2026-10-22T11:00:00Z"
+    },
+    {
+      "value": 0.863,
+      "time": "2026-10-22T11:15:00Z"
+    },
+    {
+      "value": 0.865,
+      "time": "2026-10-22T11:30:00Z"
+    },
+    {
+      "value": 0.863,
+      "time": "2026-10-22T11:45:00Z"
+    },
+    {
+      "value": 0.864,
+      "time": "2026-10-22T12:00:00Z"
+    },
+    {
+      "value": 0.862,
+      "time": "2026-10-22T12:15:00Z"
+    },
+    {
+      "value": 0.864,
+      "time": "2026-10-22T12:30:00Z"
+    },
+    {
+      "value": 0.863,
+      "time": "2026-10-22T12:45:00Z"
+    },
+    {
+      "value": 0.862,
+      "time": "2026-10-22T13:00:00Z"
+    },
+    {
+      "value": 0.864,
+      "time": "2026-10-22T13:15:00Z"
+    },
+    {
+      "value": 0.866,
+      "time": "2026-10-22T13:30:00Z"
+    },
+    {
+      "value": 0.866,
+      "time": "2026-10-22T13:45:00Z"
+    },
+    {
+      "value": 0.866,
+      "time": "2026-10-22T14:00:00Z"
+    },
+    {
+      "value": 0.866,
+      "time": "2026-10-22T14:15:00Z"
+    },
+    {
+      "value": 0.867,
+      "time": "2026-10-22T14:29:00.797Z"
+    },
+    {
+      "value": 0.867,
+      "time": "2026-10-22T14:30:00Z"
+    },
+    {
+      "value": 0.867,
+      "time": "2026-10-22T14:45:00Z"
+    },
+    {
+      "value": 0.868,
+      "time": "2026-10-22T15:00:00Z"
+    }
+  ]
+}

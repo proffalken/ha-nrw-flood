@@ -1,0 +1,35 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - custom_components/nrw_flood/manifest.json
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Read version from manifest.json
+        id: version
+        run: |
+          version=$(jq -r .version custom_components/nrw_flood/manifest.json)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Create a matching release if one doesn't exist yet
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            echo "Release $VERSION already exists, skipping."
+            exit 0
+          fi
+          gh release create "$VERSION" \
+            --title "$VERSION" \
+            --generate-notes

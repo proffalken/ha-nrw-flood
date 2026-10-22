@@ -1,0 +1,54 @@
+{
+  "IssueDate": "10/22/2026 09:30:00 AM",
+  "DayOneImage": "",
+  "DayTwoImage": "",
+  "DayThreeImage": "",
+  "DayFourImage": "",
+  "DayFiveImage": "",
+  "DayOneString_en": "Thursday 22 October 2026",
+  "DayOneString_cy": "Dydd Iau 22 Hydref 2026",
+  "DayTwoString_en": "Friday 23 October 2026",
+  "DayTwoString_cy": "Dydd Gwener 23 Hydref 2026",
+  "DayThreeString_en": "Saturday 24 October 2026",
+  "DayThreeString_cy": "Dydd Sadwrn 24 Hydref 2026",
+  "DayFourString_en": "Sunday 25 October 2026",
+  "DayFourString_cy": "Dydd Sul 25 Hydref 2026",
+  "DayFiveString_en": "Monday 26 October 2026",
+  "DayFiveString_cy": "Dydd Llun 26 Hydref 2026",
+  "Summary_en": "Local inland flooding is possible in parts of Wales on Thursday and Friday, and again on Saturday. Local coastal/tidal flooding is also possible for some Welsh coasts from Saturday through to Monday.\n\nLand, roads and some properties may flood and there may be travel disruption.",
+  "Summary_cy": "Mae posibilrwydd o lifogydd lleol mewn rhannau o Gymru ddydd Iau, dydd Gwener, ac dydd Sadwrn. Mae posibilrwydd hefyd o lifogydd lleol ar yr arfordir neu oherwydd y llanw mewn rhannau o arfordir Cymru, o ddydd Sadwrn hyd at ddydd Llun.\n \nGall tir, ffyrdd a rhai eiddo gael eu heffeithio gan lifogydd, a gallai hyn achosi tarfu ar deithio.",
+  "RiskLevels": [
+    {
+      "RiskLevelName_en": "High",
+      "RiskLevelName_cy": "Uchel",
+      "RiskLevelImpact_en": "Severe disruption. Widespread flooding of property. Severe disruption to travel. Loss of gas, electricity, water supplies. Significant disruption to communities. Evacuation expected.",
+      "RiskLevelImpact_cy": "Amhariad difrifol. Llifogydd helaeth mewn eiddo. Amhariad difrifol ar deithio. Colli cyflenwadau nwy, trydan, dwr. Tarfu sylweddol ar gymunedau. Disgwyllir y bydd angen gwacau eiddo.",
+      "RiskLevelAdvice_en": "Significant risk to life. Take action to protect yourself and follow the advice of the emergency services.",
+      "RiskLevelAdvice_cy": "Risg sylweddol i fywyd. Cymerwch gamau i'ch diogelu eich hun a dilynwch gyngor y gwasanaethau brys."
+    },
+    {
+      "RiskLevelName_en": "Medium",
+      "RiskLevelName_cy": "Cymedrol",
+      "RiskLevelImpact_en": "Significant disruption. Flooding of homes, businesses and transport links - disruption to travel. Disruption to gas, electricity, water supplies and telecoms. Evacuation may be required.",
+      "RiskLevelImpact_cy": "Amhariad sylweddol. Llifogydd mewn cartrefi, busnesau a chysylltiadau trafnidiaeth - amharu ar deithio. Amharu ar nwy, trydan, cyflenwadau dwr a thelathrebu. Efallai y bydd angen gwacau eiddo.",
+      "RiskLevelAdvice_en": "Flooding of property is expected. Take action to protect yourself and your property.",
+      "RiskLevelAdvice_cy": "Disgwylir i lifogydd effeithio ar eiddo. Cymerwch gamau i'ch diogelu eich hun a'ch eiddo."
+    },
+    {
+      "RiskLevelName_en": "Low",
+      "RiskLevelName_cy": "Isel",
+      "RiskLevelImpact_en": "Minor disruption. Flooding of fields, recreational land and car parks. Flooding of a small number of homes and businesses. Wet road services and possibility of ponding water. Local disruption to travel - longer journey times.",
+      "RiskLevelImpact_cy": "Mân broblemau. Llifogydd i gaeau, tir hamdden a meysydd parcio. Llifogydd i nifer fach o gartrefi a busnesau. Llifogydd ar ffyrdd a posibilrwydd o byllau dwr. Effaith ar deithio mewn mannau - angen neilltuo mwy o amser oherwydd gallai’r amodau gyrru fod yn beryglus.",
+      "RiskLevelAdvice_en": "Flooding of property is possible - be prepared. Stay vigilant. Water on roads - take care when driving.",
+      "RiskLevelAdvice_cy": "Llifogydd yn bosibl mewn eiddo - byddwch yn barod. Arhoswch yn wyliadwrus. Dwr ar y ffyrdd - byddwch yn ofalus wrth yrru."
+    },
+    {
+      "RiskLevelName_en": "Very Low",
+      "RiskLevelName_cy": "Isel iawn",
+      "RiskLevelImpact_en": "Minimal disruption. Flooding of fields, recreational land and car parks. Some local disruption to travel. Wet road services and possibility of ponding water.",
+      "RiskLevelImpact_cy": "Ychydig iawn o effaith. Llifogydd i gaeau, ar dir hamdden a meysydd parcio. Peth effaith lleol ar deithio,  ffyrdd gwlyb a phosibilrwydd o byllau dwr.",
+      "RiskLevelAdvice_en": "Flooding is possible - be prepared. Stay vigilant. Water on roads - take care when driving.",
+      "RiskLevelAdvice_cy": "Mae llifogydd yn bosibl - byddwch yn barod. Arhoswch yn wyliadwrus. Dwr ar y ffyrdd - byddwch yn ofalus wrth yrru."
+    }
+  ]
+}
