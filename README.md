@@ -159,10 +159,18 @@ strategy:
         label: Mayhill floods
       - value: 6.0
         label: Wye Bridge closed
+  extra_gauges:                  # level sensors from other integrations,
+    - entity: sensor.old_wye_bridge_stage   # shown after the NRW gauges
+      name: Wye at Hereford      # optional, defaults to the sensor's name
+      trend: sensor.old_wye_bridge_status   # optional trend or status sensor
+      note: The peak usually reaches Monmouth 14 to 26 hours later.
   links:                         # extra links in the Links section
     - name: Our flood plan
       url: https://example.com/flood-plan
 ```
+
+Reference levels under `thresholds` work for extra gauges too: key them by
+the extra gauge's entity ID.
 
 ## Events
 

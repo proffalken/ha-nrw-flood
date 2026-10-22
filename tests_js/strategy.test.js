@@ -242,6 +242,68 @@ describe("generateDashboard", () => {
     assert.equal(maps[0].name, "Day 1");
   });
 
+  it("adds gauges from other integrations, after the NRW gauges", async () => {
+    const config = {
+      extra_gauges: [
+        {
+          entity: "sensor.old_wye_bridge_stage",
+          name: "Wye at Hereford",
+          note: "The peak usually reaches Monmouth 14 to 26 hours later.",
+        },
+      ],
+      thresholds: {
+        "sensor.old_wye_bridge_stage": [
+          { value: 3.3, label: "Typical high" },
+          { value: 6.111, label: "Record (Feb 2020)" },
+        ],
+      },
+    };
+    const [view] = (await generateDashboard(config, makeHass())).views;
+    const headings = view.sections.map((s) => s.cards[0].heading);
+    const hereford = headings.indexOf("Wye at Hereford");
+    assert.ok(hereford > headings.indexOf("Wye at Monmouth"), headings.join(", "));
+    assert.ok(hereford < headings.indexOf("Wales-wide 5-day forecast"), headings.join(", "));
+
+    const section = view.sections[hereford];
+    const status = section.cards.find((c) => c.type === "markdown").content;
+    assert.match(status, /states\('sensor\.old_wye_bridge_stage'\)/);
+    assert.match(status, /Typical high/);
+    assert.match(status, /14 to 26 hours later/);
+    assert.equal(section.cards.find((c) => c.type === "gauge").entity, "sensor.old_wye_bridge_stage");
+  });
+
+  it("shows an extra gauge's own trend or status sensor when given", async () => {
+    const config = {
+      extra_gauges: [{ entity: "sensor.x_stage", trend: "sensor.x_status", name: "X" }],
+    };
+    const [view] = (await generateDashboard(config, makeHass())).views;
+    const section = view.sections.find((s) => s.cards[0].heading === "X");
+    const status = section.cards[1].content;
+    assert.match(status, /states\('sensor\.x_status'\)/);
+    assert.match(status, /No reference levels set/);
+    assert.equal(findCards({ sections: [section] }, "gauge").length, 0);
+  });
+
+  it("names an extra gauge after its entity when no name is given", async () => {
+    const hass = makeHass();
+    hass.states["sensor.x_stage"] = { state: "1", attributes: { friendly_name: "X stage" } };
+    const config = { extra_gauges: [{ entity: "sensor.x_stage" }, { entity: "sensor.y_stage" }] };
+    const [view] = (await generateDashboard(config, hass)).views;
+    const headings = view.sections.map((s) => s.cards[0].heading);
+    assert.ok(headings.includes("X stage"));
+    assert.ok(headings.includes("sensor.y_stage"));
+  });
+
+  it("shows extra gauges even when the integration has no gauges of its own", async () => {
+    const config = { extra_gauges: [{ entity: "sensor.x_stage", name: "X" }] };
+    const hass = makeHass();
+    for (const id of Object.keys(hass.entities)) {
+      if (hass.entities[id].device_id !== "dev_warn") delete hass.entities[id];
+    }
+    const [view] = (await generateDashboard(config, hass)).views;
+    assert.ok(view.sections.some((s) => s.cards[0].heading === "X"));
+  });
+
   it("leaves out warnings and forecast sections when those APIs aren't configured", async () => {
     const hass = makeHass({ withForecast: false, withWarnings: false });
     const [view] = (await generateDashboard({}, hass)).views;
