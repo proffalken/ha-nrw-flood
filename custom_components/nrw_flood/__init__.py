@@ -7,7 +7,9 @@ from dataclasses import dataclass
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_LATITUDE, CONF_LONGITUDE, Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.typing import ConfigType
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .api import NRWApiClient
@@ -18,10 +20,14 @@ from .const import (
     CONF_RADIUS_KM,
     CONF_STATIONS,
     CONF_WARNINGS_KEY,
+    DOMAIN,
 )
 from .coordinator import ForecastCoordinator, LevelsCoordinator, WarningsCoordinator
+from .dashboard import async_register_dashboard_strategy
 
 PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.BINARY_SENSOR]
+
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 
 @dataclass(slots=True)
@@ -43,6 +49,12 @@ type NRWFloodConfigEntry = ConfigEntry[NRWFloodRuntimeData]
 def selected(entry: ConfigEntry, key: str) -> list[str]:
     """Areas or stations chosen in options, falling back to the initial setup."""
     return list(entry.options.get(key, entry.data.get(key, [])))
+
+
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+    """Serve the dashboard strategy, once, however many entries there are."""
+    await async_register_dashboard_strategy(hass)
+    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: NRWFloodConfigEntry) -> bool:

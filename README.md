@@ -106,6 +106,53 @@ Polled every hour. The format of the areas-at-risk entries is not documented,
 and the list was empty while this integration was written, so the entries are
 passed through unchanged.
 
+## Dashboard
+
+The integration adds an **NRW Flood** dashboard type. To create the
+dashboard:
+
+1. Go to **Settings → Dashboards → Add dashboard** and choose **NRW Flood**.
+2. Give it a URL, for example `nrw-flood`.
+
+It builds itself from the integration's entities each time it opens, so
+gauges you add later appear without editing it. It shows:
+
+- the warnings in force, with NRW's full message
+- each gauge's level, trend, rate of change, last reading and a history graph
+- the 5-day forecast summary
+- links to NRW, Floodline and each gauge's page
+
+Its single view is at `/<dashboard URL>/flood`, which you can use as a
+notification's click action:
+
+```yaml
+data:
+  clickAction: /nrw-flood/flood   # Android
+  url: /nrw-flood/flood           # iOS
+```
+
+### Options
+
+Edit the dashboard's raw configuration (**⋮ → Raw configuration editor**) to
+add options under `strategy`:
+
+```yaml
+strategy:
+  type: custom:nrw-flood
+  title: Flood                   # default "Flood"
+  hours_to_show: 48              # history graph length, default 24
+  entry_id: 01J...               # only show one NRW Flood location
+  thresholds:                    # reference levels: shows a gauge with
+    sensor.wye_at_monmouth_level: # coloured bands instead of a tile
+      - value: 5.2
+        label: Mayhill floods
+      - value: 6.0
+        label: Wye Bridge closed
+  links:                         # extra links in the Links section
+    - name: Our flood plan
+      url: https://example.com/flood-plan
+```
+
 ## Events
 
 The integration fires `nrw_flood_warning_changed` when a warning in your areas
@@ -160,6 +207,7 @@ actions:
 uv sync
 uv run pytest
 uv run ruff check . && uv run ruff format --check .
+npm test   # dashboard strategy tests (Node's built-in runner, no dependencies)
 ```
 
 `scripts/capture_fixtures.py` runs the client against the live APIs and prints

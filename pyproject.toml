@@ -1,6 +1,6 @@
 [project]
 name = "ha-nrw-flood"
-version = "0.1.0"
+version = "0.2.0"
 description = "Home Assistant custom integration for Natural Resources Wales flood warnings, river levels and flood risk forecasts"
 requires-python = ">=3.14.2"
 dependencies = []

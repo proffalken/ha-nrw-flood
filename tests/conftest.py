@@ -3,8 +3,10 @@
 import json
 from pathlib import Path
 from typing import Any
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+from homeassistant.components.frontend import DATA_EXTRA_MODULE_URL
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.nrw_flood.const import (
@@ -29,6 +31,21 @@ pytest_plugins = "pytest_homeassistant_custom_component"
 def auto_enable_custom_integrations(enable_custom_integrations):
     """Enable custom integrations for every test in this suite."""
     yield
+
+
+@pytest.fixture(autouse=True)
+def fake_frontend(hass) -> MagicMock:
+    """Stand in for the frontend and http components.
+
+    The real frontend needs the hass_frontend package, which custom
+    integration test environments don't have. Marking both as loaded lets
+    our manifest dependencies resolve, and records what we register.
+    """
+    hass.config.components.update({"frontend", "http"})
+    hass.data[DATA_EXTRA_MODULE_URL] = set()
+    hass.http = MagicMock()
+    hass.http.async_register_static_paths = AsyncMock()
+    return hass.http
 
 
 def load_fixture(name: str) -> Any:
