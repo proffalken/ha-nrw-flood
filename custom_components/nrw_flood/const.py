@@ -19,6 +19,7 @@ CONF_STATIONS: Final = "stations"
 DEFAULT_RADIUS_KM: Final = 5
 
 API_BASE_URL: Final = "https://api.naturalresources.wales"
+PORTAL_URL: Final = "https://api-portal.naturalresources.wales"
 KEY_HEADER: Final = "Ocp-Apim-Subscription-Key"
 
 # DataMapWales GeoServer: open (no key). Holds the outlines of NRW's flood

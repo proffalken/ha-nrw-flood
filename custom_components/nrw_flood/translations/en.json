@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Natural Resources Wales flood data",
-        "description": "Each NRW API has its own subscription key from the NRW API portal (https://api-portal.naturalresources.wales). Enter the keys for the APIs you want: at least one is needed.",
+        "description": "Each NRW API has its own subscription key from the NRW API portal ({portal_url}). Enter the keys for the APIs you want: at least one is needed.",
         "data": {
           "warnings_api_key": "Live Flood Warnings and Alerts API key",
           "levels_api_key": "River Level, Rainfall and Sea Data API key",

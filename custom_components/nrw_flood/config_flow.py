@@ -41,6 +41,7 @@ from .const import (
     CONF_WARNINGS_KEY,
     DEFAULT_RADIUS_KM,
     DOMAIN,
+    PORTAL_URL,
 )
 from .models import FloodArea, Station
 
@@ -161,6 +162,7 @@ class NRWFloodConfigFlow(ConfigFlow, domain=DOMAIN):
             step_id="user",
             data_schema=self._user_schema(user_input),
             errors=errors,
+            description_placeholders={"portal_url": PORTAL_URL},
         )
 
     async def _async_validate(self, keys, lat, lon, radius) -> dict[str, str]:

@@ -395,3 +395,11 @@ async def test_options_abort_when_forecast_only(hass, mock_client) -> None:
 
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "nothing_to_choose"
+
+
+async def test_user_step_links_to_api_portal(hass, mock_client) -> None:
+    result = await _start(hass)
+
+    assert result["description_placeholders"] == {
+        "portal_url": "https://api-portal.naturalresources.wales"
+    }
