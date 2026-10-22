@@ -7,6 +7,7 @@
 //
 // Optional strategy config (edit the dashboard's raw configuration):
 //   title: Flood                 # dashboard and view title
+//   show_graphs: false           # add a level history graph per gauge
 //   hours_to_show: 24            # history graph length
 //   entry_id: <config entry id>  # only show one NRW Flood location
 //   thresholds:                  # reference levels, drawn as a gauge
@@ -99,30 +100,86 @@ function gaugeCard(entityId, thresholds) {
   };
 }
 
-function gaugeSection(hass, deviceId, entities, config) {
-  const level = byKey(entities, "level");
-  const trend = byKey(entities, "trend");
-  const rate = byKey(entities, "rate_of_change");
-  const last = byKey(entities, "last_reading");
-  const thresholds = (config.thresholds || {})[level];
-  const cards = [{ type: "heading", heading: deviceName(hass, deviceId) }];
+const UNAVAILABLE = "['unknown', 'unavailable']";
 
-  if (level && thresholds && thresholds.length) {
-    cards.push(gaugeCard(level, thresholds));
-    const lines = [...thresholds]
-      .sort((a, b) => a.value - b.value)
-      .map((t) => `- ${t.value} m: ${t.label}`);
-    cards.push({ type: "markdown", content: `**Reference levels**\n${lines.join("\n")}` });
-  } else if (level) {
-    cards.push({ type: "tile", entity: level });
+// Shows a reference level the way it was configured, but always with a decimal
+// point, so 6 reads as "6.0 m".
+function formatLevel(value) {
+  return Number.isInteger(value) ? value.toFixed(1) : String(value);
+}
+
+// A Jinja list literal of [value, label, display] for each reference level.
+function levelsLiteral(sorted) {
+  const items = sorted.map(
+    (t) => `[${t.value}, ${JSON.stringify(t.label)}, ${JSON.stringify(formatLevel(t.value))}]`,
+  );
+  return `[${items.join(", ")}]`;
+}
+
+function referenceLines(sorted) {
+  return sorted.map((t) => `${formatLevel(t.value)} m: ${t.label}`).join(" · ");
+}
+
+// One markdown card per gauge: the level, which way it is going, and how far it
+// is from the next reference level.
+function riverContent({ level, trend, rate, last }, sorted) {
+  const lines = [`{% set lvl = states('${level}') %}`];
+  lines.push(`{% if lvl in ${UNAVAILABLE} %}
+No current reading.
+{% else %}
+{% set v = lvl | float %}`);
+  let reading = "**{{ '%.2f' | format(v) }} m**";
+  if (trend) {
+    lines.push(`{% set trend = states('${trend}') %}`);
+    reading += `, {{ trend if trend not in ${UNAVAILABLE} else 'trend unknown' }}`;
   }
-  for (const id of [trend, rate, last]) {
-    if (id) cards.push({ type: "tile", entity: id });
+  if (rate) {
+    lines.push(`{% set rate = states('${rate}') %}`);
+    reading +=
+      `{% if rate not in ${UNAVAILABLE} %}` +
+      " ({{ '%+.2f' | format(rate | float) }} m/h){% endif %}";
   }
-  if (level) {
+  lines.push(reading);
+  if (sorted.length) {
+    lines.push(`
+{% set levels = ${levelsLiteral(sorted)} %}
+{% set ns = namespace(next=none, passed=none) %}
+{% for t in levels %}{% if v >= t[0] %}{% set ns.passed = t %}{% elif ns.next is none %}{% set ns.next = t %}{% endif %}{% endfor %}
+{% if ns.passed %}<ha-alert alert-type="error">Above {{ ns.passed[1] }} ({{ ns.passed[2] }} m)</ha-alert>{% endif %}
+{% if ns.next %}{{ '%.2f' | format(ns.next[0] - v) }} m below {{ ns.next[1] }} ({{ ns.next[2] }} m).{% endif %}`);
+  }
+  lines.push("{% endif %}");
+  if (last) {
+    lines.push(`
+{% set last = states('${last}') %}
+<small>{% if last not in ${UNAVAILABLE} %}Reading at {{ as_timestamp(last) | timestamp_custom('${TIME_FORMAT}') }}. {% endif %}${
+      sorted.length ? `Reference levels: ${referenceLines(sorted)}` : "No reference levels set."
+    }</small>`);
+  } else if (!sorted.length) {
+    lines.push("\n<small>No reference levels set.</small>");
+  }
+  return lines.join("\n");
+}
+
+function gaugeSection(hass, deviceId, entities, config) {
+  const ids = {
+    level: byKey(entities, "level"),
+    trend: byKey(entities, "trend"),
+    rate: byKey(entities, "rate_of_change"),
+    last: byKey(entities, "last_reading"),
+  };
+  const sorted = [...((config.thresholds || {})[ids.level] || [])].sort(
+    (a, b) => a.value - b.value,
+  );
+  const cards = [
+    { type: "heading", heading: deviceName(hass, deviceId) },
+    { type: "markdown", content: riverContent(ids, sorted) },
+  ];
+  if (sorted.length) cards.push(gaugeCard(ids.level, sorted));
+  if (config.show_graphs) {
     cards.push({
       type: "history-graph",
-      entities: [{ entity: level }],
+      entities: [{ entity: ids.level }],
       hours_to_show: config.hours_to_show || DEFAULT_HOURS,
     });
   }
