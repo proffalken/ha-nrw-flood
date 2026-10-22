@@ -118,9 +118,15 @@ It builds itself from the integration's entities each time it opens, so
 gauges you add later appear without editing it. It shows:
 
 - the warnings in force, with NRW's full message
-- each gauge's level, trend, rate of change, last reading and a history graph
+- one card per gauge with its level, whether it is rising, steady or
+  falling, and its rate of change. If you set reference levels for the
+  gauge, the card also says how far the river is below the next one (or
+  which one it is above) and shows a gauge with coloured bands
 - the 5-day forecast summary
 - links to NRW, Floodline and each gauge's page
+
+History graphs are off by default to keep the dashboard quick to read. Set
+`show_graphs: true` to add one per gauge.
 
 Its single view is at `/<dashboard URL>/flood`, which you can use as a
 notification's click action:
@@ -140,10 +146,11 @@ add options under `strategy`:
 strategy:
   type: custom:nrw-flood
   title: Flood                   # default "Flood"
+  show_graphs: true              # level history graph per gauge, default false
   hours_to_show: 48              # history graph length, default 24
   entry_id: 01J...               # only show one NRW Flood location
-  thresholds:                    # reference levels: shows a gauge with
-    sensor.wye_at_monmouth_level: # coloured bands instead of a tile
+  thresholds:                    # reference levels: distance to the next
+    sensor.wye_at_monmouth_level: # one, and a gauge with coloured bands
       - value: 5.2
         label: Mayhill floods
       - value: 6.0

@@ -98,30 +98,40 @@ describe("generateDashboard", () => {
     assert.ok(monnow < wye);
   });
 
-  it("shows level, trend and rate tiles and a level history graph for each gauge", async () => {
+  it("shows each gauge as one status card built from its level, trend and rate", async () => {
     const [view] = (await generateDashboard({}, makeHass())).views;
-    const tiles = findCards(view, "tile").map((c) => c.entity);
+    const wye = view.sections.find((s) => s.cards[0].heading === "Wye at Monmouth");
+    const status = wye.cards.filter((c) => c.type === "markdown");
+    assert.equal(status.length, 1);
     for (const id of [
       "sensor.wye_at_monmouth_level",
       "sensor.wye_at_monmouth_trend",
       "sensor.wye_at_monmouth_rate_of_change",
+      "sensor.wye_at_monmouth_last_reading",
     ]) {
-      assert.ok(tiles.includes(id), `missing tile ${id}`);
+      assert.match(status[0].content, new RegExp(id.replace(/\./g, "\\.")), `missing ${id}`);
     }
+    assert.equal(findCards(view, "tile").length, 0);
+  });
+
+  it("leaves out graphs unless show_graphs is set", async () => {
+    const [view] = (await generateDashboard({}, makeHass())).views;
+    assert.equal(findCards(view, "history-graph").length, 0);
+  });
+
+  it("adds a level graph per gauge when show_graphs is set, honouring hours_to_show", async () => {
+    const [view] = (await generateDashboard({ show_graphs: true }, makeHass())).views;
     const graphs = findCards(view, "history-graph");
-    const wyeGraph = graphs.find((g) => g.entities[0].entity === "sensor.wye_at_monmouth_level");
-    assert.ok(wyeGraph);
-    assert.equal(wyeGraph.hours_to_show, 24);
+    assert.equal(graphs.length, 2);
+    assert.ok(graphs.every((g) => g.hours_to_show === 24));
+    const [longer] = (await generateDashboard({ show_graphs: true, hours_to_show: 72 }, makeHass()))
+      .views;
+    assert.ok(findCards(longer, "history-graph").every((g) => g.hours_to_show === 72));
   });
 
   it("ignores entities from other integrations", async () => {
     const [view] = (await generateDashboard({}, makeHass())).views;
     assert.ok(!JSON.stringify(view).includes("sensor.other_level"));
-  });
-
-  it("honours hours_to_show", async () => {
-    const [view] = (await generateDashboard({ hours_to_show: 72 }, makeHass())).views;
-    assert.ok(findCards(view, "history-graph").every((g) => g.hours_to_show === 72));
   });
 
   it("shows a gauge with labelled segments where reference levels are configured", async () => {
@@ -149,19 +159,37 @@ describe("generateDashboard", () => {
         [6.0, "Wye Bridge closed"],
       ],
     );
-    // Gauges without reference levels keep the plain tile for the level.
-    const tiles = findCards(view, "tile").map((c) => c.entity);
-    assert.ok(tiles.includes("sensor.monnow_at_monnow_gate_level"));
-    assert.ok(!tiles.includes("sensor.wye_at_monmouth_level"));
   });
 
-  it("lists reference levels as text so they're readable on a phone", async () => {
+  it("works out the distance to the next reference level in the status card", async () => {
     const config = {
-      thresholds: { "sensor.wye_at_monmouth_level": [{ value: 5.2, label: "Mayhill floods" }] },
+      thresholds: {
+        "sensor.wye_at_monmouth_level": [
+          { value: 6.0, label: "Wye Bridge closed" },
+          { value: 5.2, label: "Mayhill floods" },
+        ],
+      },
+    };
+    const [view] = (await generateDashboard(config, makeHass())).views;
+    const wye = view.sections.find((s) => s.cards[0].heading === "Wye at Monmouth");
+    const status = wye.cards.find((c) => c.type === "markdown").content;
+    // Levels go into the template sorted, as a Jinja list literal.
+    assert.ok(status.includes('[[5.2, "Mayhill floods", "5.2"], [6, "Wye Bridge closed", "6.0"]]'), status);
+    assert.match(status, /below/);
+    assert.match(status, /above/i);
+    // The gauge without reference levels says so rather than guessing.
+    const monnow = view.sections.find((s) => s.cards[0].heading === "Monnow (town)");
+    assert.match(monnow.cards.find((c) => c.type === "markdown").content, /No reference levels/);
+    assert.equal(findCards(view, "gauge").length, 1);
+  });
+
+  it("escapes quotes in reference level labels", async () => {
+    const config = {
+      thresholds: { "sensor.wye_at_monmouth_level": [{ value: 5, label: 'The "Bridge"' }] },
     };
     const [view] = (await generateDashboard(config, makeHass())).views;
     const text = findCards(view, "markdown").map((c) => c.content).join("\n");
-    assert.match(text, /5\.2 m: Mayhill floods/);
+    assert.ok(text.includes('[[5, "The \\"Bridge\\"", "5.0"]]'), text);
   });
 
   it("includes the forecast when the forecast API is configured", async () => {
@@ -176,7 +204,7 @@ describe("generateDashboard", () => {
     const text = JSON.stringify(view);
     assert.ok(!text.includes("nrw_flood_warnings"));
     assert.ok(!text.includes("nrw_flood_risk_forecast"));
-    assert.ok(findCards(view, "tile").length > 0);
+    assert.ok(text.includes("sensor.wye_at_monmouth_level"));
   });
 
   it("adds a links section with Floodline and any configured links", async () => {
