@@ -4,6 +4,6 @@
   "type": "module",
   "description": "Tests for the NRW Flood dashboard strategy (no build step, no dependencies)",
   "scripts": {
-    "test": "node --test tests_js/"
+    "test": "node --test tests_js/*.test.js"
   }
 }

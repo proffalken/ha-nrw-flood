@@ -1,4 +1,4 @@
-// Tests for the NRW Flood dashboard strategy. Run with: node --test tests_js/
+// Tests for the NRW Flood dashboard strategy. Run with: npm test
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
