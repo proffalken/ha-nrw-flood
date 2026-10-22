@@ -14,6 +14,11 @@
 //     sensor.wye_at_monmouth_level:
 //       - value: 5.2
 //         label: Mayhill floods
+//   extra_gauges:                # level sensors from other integrations
+//     - entity: sensor.old_wye_bridge_stage
+//       name: Wye at Hereford      # optional; defaults to the sensor's name
+//       trend: sensor.old_wye_bridge_status  # optional trend or status sensor
+//       note: Peak reaches Monmouth 14-26 hours later.  # optional
 //   links:                       # extra links in the links section
 //     - name: Emergency protocols
 //       url: https://example.com
@@ -143,7 +148,7 @@ function referenceLines(sorted) {
 
 // One markdown card per gauge: the level, which way it is going, and how far it
 // is from the next reference level.
-function riverContent({ level, trend, rate, last }, sorted) {
+function riverContent({ level, trend, rate, last }, sorted, note) {
   const lines = [`{% set lvl = states('${level}') %}`];
   lines.push(`{% if lvl in ${UNAVAILABLE} %}
 No current reading.
@@ -170,31 +175,27 @@ No current reading.
 {% if ns.next %}{{ '%.2f' | format(ns.next[0] - v) }} m below {{ ns.next[1] }} ({{ ns.next[2] }} m).{% endif %}`);
   }
   lines.push("{% endif %}");
+  if (note) lines.push(`\n${note}`);
+  const levels = sorted.length
+    ? `Reference levels: ${referenceLines(sorted)}`
+    : "No reference levels set.";
   if (last) {
     lines.push(`
 {% set last = states('${last}') %}
-<small>{% if last not in ${UNAVAILABLE} %}Reading at {{ as_timestamp(last) | timestamp_custom('${TIME_FORMAT}') }}. {% endif %}${
-      sorted.length ? `Reference levels: ${referenceLines(sorted)}` : "No reference levels set."
-    }</small>`);
-  } else if (!sorted.length) {
-    lines.push("\n<small>No reference levels set.</small>");
+<small>{% if last not in ${UNAVAILABLE} %}Reading at {{ as_timestamp(last) | timestamp_custom('${TIME_FORMAT}') }}. {% endif %}${levels}</small>`);
+  } else {
+    lines.push(`\n<small>${levels}</small>`);
   }
   return lines.join("\n");
 }
 
-function gaugeSection(hass, deviceId, entities, config) {
-  const ids = {
-    level: byKey(entities, "level"),
-    trend: byKey(entities, "trend"),
-    rate: byKey(entities, "rate_of_change"),
-    last: byKey(entities, "last_reading"),
-  };
+function riverSection(heading, ids, config, note) {
   const sorted = [...((config.thresholds || {})[ids.level] || [])].sort(
     (a, b) => a.value - b.value,
   );
   const cards = [
-    { type: "heading", heading: deviceName(hass, deviceId) },
-    { type: "markdown", content: riverContent(ids, sorted) },
+    { type: "heading", heading },
+    { type: "markdown", content: riverContent(ids, sorted, note) },
   ];
   if (sorted.length) cards.push(gaugeCard(ids.level, sorted));
   if (config.show_graphs) {
@@ -205,6 +206,34 @@ function gaugeSection(hass, deviceId, entities, config) {
     });
   }
   return { type: "grid", cards };
+}
+
+function gaugeSection(hass, deviceId, entities, config) {
+  return riverSection(
+    deviceName(hass, deviceId),
+    {
+      level: byKey(entities, "level"),
+      trend: byKey(entities, "trend"),
+      rate: byKey(entities, "rate_of_change"),
+      last: byKey(entities, "last_reading"),
+    },
+    config,
+  );
+}
+
+// Level sensors from other integrations, such as an Environment Agency gauge
+// upstream in England.
+function extraGaugeSections(hass, config) {
+  return (config.extra_gauges || [])
+    .filter((g) => g && g.entity)
+    .map((g) =>
+      riverSection(
+        g.name || hass.states?.[g.entity]?.attributes?.friendly_name || g.entity,
+        { level: g.entity, trend: g.trend },
+        config,
+        g.note,
+      ),
+    );
 }
 
 function linksContent(hass, gauges, config) {
@@ -268,6 +297,7 @@ export async function generateDashboard(config, hass) {
   for (const { deviceId, entities: list } of gauges) {
     sections.push(gaugeSection(hass, deviceId, list, config));
   }
+  sections.push(...extraGaugeSections(hass, config));
 
   const issuedId = byKey(entities, "forecast_issued");
   if (issuedId) {
