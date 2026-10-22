@@ -1,0 +1,29 @@
+[project]
+name = "ha-nrw-flood"
+version = "0.1.0"
+description = "Home Assistant custom integration for Natural Resources Wales flood warnings, river levels and flood risk forecasts"
+requires-python = ">=3.14.2"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "pytest-homeassistant-custom-component>=0.13.373",
+    "pytest-cov>=6.0",
+    "aioresponses>=0.7.8",
+    "ruff>=0.14",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+target-version = "py314"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "ASYNC"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["."]

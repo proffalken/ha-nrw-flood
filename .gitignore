@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Virtual environments
+.venv/
+venv/
+
+# Env / secrets — never commit
+.env
+.env.*
+!.env.example
+secrets.yaml
+
+# Test / coverage
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# uv
+uv.lock.bak
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Home Assistant local dev config (if a test HA instance is ever run from here)
+config/.storage/
+config/home-assistant.log
