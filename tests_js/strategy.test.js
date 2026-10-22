@@ -5,6 +5,7 @@ import { describe, it } from "node:test";
 import {
   STRATEGY_TYPE,
   generateDashboard,
+  keepStrategyRegistered,
   registerStrategy,
 } from "../custom_components/nrw_flood/frontend/nrw-flood-strategy.js";
 
@@ -255,5 +256,84 @@ describe("registerStrategy", () => {
       { type: "nrw-flood", strategyType: "dashboard" },
     );
     assert.ok(win.customStrategies[0].name);
+  });
+});
+
+function fakeRegistry() {
+  const defined = {};
+  return {
+    defined,
+    get: (tag) => defined[tag],
+    define: (tag, cls) => {
+      if (defined[tag]) throw new Error(`${tag} already defined`);
+      defined[tag] = cls;
+    },
+  };
+}
+
+function fakeTimers() {
+  const timers = { callback: null, cleared: false, now: 0 };
+  timers.setInterval = (fn) => {
+    timers.callback = fn;
+    return 1;
+  };
+  timers.clearInterval = () => {
+    timers.cleared = true;
+  };
+  timers.tick = (ms) => {
+    timers.now += ms;
+    if (!timers.cleared) timers.callback();
+  };
+  return timers;
+}
+
+const TAG = "ll-strategy-dashboard-nrw-flood";
+
+describe("keepStrategyRegistered", () => {
+  it("registers straight away", () => {
+    const win = { customElements: fakeRegistry(), HTMLElement: class {} };
+    const timers = fakeTimers();
+    keepStrategyRegistered(win, { timers, now: () => timers.now });
+    assert.equal(typeof win.customElements.get(TAG).generate, "function");
+  });
+
+  it("registers again when Home Assistant swaps in a new element registry", () => {
+    // HA's frontend installs a scoped custom element registry polyfill, which
+    // replaces window.customElements. A definition made before the swap is
+    // invisible afterwards, and HA then times out waiting for the strategy.
+    const win = { customElements: fakeRegistry(), HTMLElement: class {} };
+    const timers = fakeTimers();
+    keepStrategyRegistered(win, { timers, now: () => timers.now });
+
+    win.customElements = fakeRegistry();
+    timers.tick(200);
+
+    assert.equal(typeof win.customElements.get(TAG).generate, "function");
+    assert.equal(win.customStrategies.length, 1);
+  });
+
+  it("does not let a failed definition stop later attempts", () => {
+    const win = { customElements: fakeRegistry(), HTMLElement: class {} };
+    const timers = fakeTimers();
+    keepStrategyRegistered(win, { timers, now: () => timers.now });
+
+    const broken = fakeRegistry();
+    broken.define = () => {
+      throw new Error("not ready");
+    };
+    win.customElements = broken;
+    assert.doesNotThrow(() => timers.tick(200));
+
+    win.customElements = fakeRegistry();
+    timers.tick(200);
+    assert.ok(win.customElements.get(TAG));
+  });
+
+  it("stops checking after the time limit", () => {
+    const win = { customElements: fakeRegistry(), HTMLElement: class {} };
+    const timers = fakeTimers();
+    keepStrategyRegistered(win, { timers, now: () => timers.now, timeoutMs: 1000 });
+    timers.tick(1200);
+    assert.ok(timers.cleared);
   });
 });

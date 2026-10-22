@@ -297,6 +297,33 @@ export function registerStrategy(win, registry, BaseClass) {
   }
 }
 
+// Home Assistant's frontend installs a scoped custom element registry
+// polyfill when it starts, which replaces window.customElements. This script
+// is loaded at the same time, so it can define the strategy in the original
+// registry just before the swap, where Home Assistant can no longer see it.
+// Keep checking for a while after loading and define it again if it has gone.
+export function keepStrategyRegistered(
+  win,
+  { intervalMs = 200, timeoutMs = 60000, timers = globalThis, now = Date.now } = {},
+) {
+  const attempt = () => {
+    try {
+      registerStrategy(win, win.customElements, win.HTMLElement);
+    } catch (err) {
+      // The registry may not be ready yet; the next check tries again.
+    }
+  };
+  attempt();
+  const started = now();
+  const handle = timers.setInterval(() => {
+    if (now() - started > timeoutMs) {
+      timers.clearInterval(handle);
+      return;
+    }
+    if (!win.customElements.get(`ll-strategy-dashboard-${STRATEGY_TYPE}`)) attempt();
+  }, intervalMs);
+}
+
 if (typeof window !== "undefined" && window.customElements) {
-  registerStrategy(window, window.customElements, HTMLElement);
+  keepStrategyRegistered(window);
 }
