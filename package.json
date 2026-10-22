@@ -1,0 +1,9 @@
+{
+  "name": "ha-nrw-flood-frontend",
+  "private": true,
+  "type": "module",
+  "description": "Tests for the NRW Flood dashboard strategy (no build step, no dependencies)",
+  "scripts": {
+    "test": "node --test tests_js/"
+  }
+}
