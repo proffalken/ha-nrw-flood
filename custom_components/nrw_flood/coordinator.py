@@ -32,6 +32,7 @@ from .models import (
     Station,
     highest_level,
     rate_of_change,
+    trend_from_rate,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -54,6 +55,15 @@ class StationData:
 
     station: Station
     rate: float | None
+
+    @property
+    def trend(self) -> str | None:
+        """rising / steady / falling from the hourly rate, or NRW's status
+        until there's an hour of readings. NRW's status only compares the
+        last two readings, so it flips with every few millimetres of jitter."""
+        if self.rate is None:
+            return self.station.trend
+        return trend_from_rate(self.rate)
 
 
 @dataclass(frozen=True, slots=True)

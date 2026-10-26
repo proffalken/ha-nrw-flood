@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import base64
 import binascii
+import statistics
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 from typing import Any
@@ -14,6 +15,8 @@ from .const import LEVEL_NONE, LEVELS, SEVERITY_TO_LEVEL, STATION_URL
 _UK = ZoneInfo("Europe/London")
 _RIVER_LEVEL = "River Level"
 _RATE_WINDOW = timedelta(hours=1)
+# Readings jitter by about a centimetre, so smaller hourly rates count as steady.
+STEADY_RATE = 0.02  # m/h
 
 
 def parse_nrw_time(value: Any) -> datetime | None:
@@ -215,8 +218,12 @@ def parse_history(payload: Any) -> list[Reading]:
 def rate_of_change(readings: list[Reading]) -> float | None:
     """Metres per hour over roughly the last hour of readings.
 
-    Compares the latest reading with the newest one at least an hour older.
-    Returns None until there's an hour of data.
+    Uses the readings from the newest one at least an hour older than the
+    latest, up to the latest. The rate is the median of the slopes between
+    every pair of those readings (the Theil-Sen estimator). With the usual five
+    readings in the hour, one wild reading or a few millimetres of jitter
+    barely move it; with fewer readings each one counts for more. Returns None
+    until there's an hour of data.
     """
     if not readings:
         return None
@@ -225,9 +232,25 @@ def rate_of_change(readings: list[Reading]) -> float | None:
     earlier = [r for r in readings if r.time <= target]
     if not earlier:
         return None
-    base = earlier[-1]
-    hours = (latest.time - base.time).total_seconds() / 3600
-    return round((latest.value - base.value) / hours, 3)
+    window = [r for r in readings if r.time >= earlier[-1].time]
+    slopes = [
+        (b.value - a.value) / ((b.time - a.time).total_seconds() / 3600)
+        for i, a in enumerate(window)
+        for b in window[i + 1 :]
+        if b.time > a.time
+    ]
+    return round(statistics.median(slopes), 3)
+
+
+def trend_from_rate(rate: float | None) -> str | None:
+    """rising / falling / steady from the rate, steady within ±STEADY_RATE m/h."""
+    if rate is None:
+        return None
+    if rate > STEADY_RATE:
+        return "rising"
+    if rate < -STEADY_RATE:
+        return "falling"
+    return "steady"
 
 
 @dataclass(frozen=True, slots=True)

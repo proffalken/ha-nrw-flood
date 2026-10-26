@@ -89,7 +89,7 @@ STATION_SENSORS = (
         translation_key="trend",
         device_class=SensorDeviceClass.ENUM,
         options=list(TRENDS),
-        value_fn=lambda d: d.station.trend,
+        value_fn=lambda d: d.trend,
     ),
     StationSensorDescription(
         key="last_reading",
