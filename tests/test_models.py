@@ -15,6 +15,7 @@ from custom_components.nrw_flood.models import (
     parse_stations,
     parse_warnings,
     rate_of_change,
+    trend_from_rate,
     trend_from_status,
 )
 from tests.conftest import load_fixture
@@ -161,9 +162,9 @@ def _readings(start: datetime, values: list[float]) -> list[Reading]:
 
 def test_rate_of_change_over_an_hour() -> None:
     start = datetime(2026, 10, 22, 12, 0, tzinfo=UTC)
-    readings = _readings(start, [1.0, 1.1, 1.2, 1.3, 1.5])
+    readings = _readings(start, [1.0, 1.1, 1.2, 1.3, 1.4])
 
-    assert rate_of_change(readings) == pytest.approx(0.5)
+    assert rate_of_change(readings) == pytest.approx(0.4)
 
 
 def test_rate_of_change_falling() -> None:
@@ -171,6 +172,48 @@ def test_rate_of_change_falling() -> None:
     readings = _readings(start, [2.0, 1.9, 1.8, 1.7, 1.6])
 
     assert rate_of_change(readings) == pytest.approx(-0.4)
+
+
+def test_rate_of_change_uses_only_the_last_hour() -> None:
+    start = datetime(2026, 10, 22, 12, 0, tzinfo=UTC)
+    # Fast rise two hours ago, flat for the last hour.
+    readings = _readings(start, [1.0, 1.5, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0])
+
+    assert rate_of_change(readings) == pytest.approx(0.0)
+
+
+def test_one_wild_reading_does_not_move_the_rate() -> None:
+    """Monnow Gate, 26 Oct 2026: one 2.748 m reading among ~2.01 m ones."""
+    start = datetime(2026, 10, 26, 0, 2, tzinfo=UTC)
+    readings = _readings(start, [2.014, 2.013, 2.748, 2.013, 2.020])
+
+    assert abs(rate_of_change(readings)) < 0.02
+
+
+def test_reading_jitter_does_not_flip_the_rate() -> None:
+    """Monnow Gate, 26 Oct 2026, 06:02-07:02: levelling off, last reading 3 mm lower."""
+    start = datetime(2026, 10, 26, 6, 2, tzinfo=UTC)
+    readings = _readings(start, [2.210, 2.215, 2.216, 2.219, 2.216])
+
+    rate = rate_of_change(readings)
+    assert 0 < rate < 0.02
+
+
+@pytest.mark.parametrize(
+    ("rate", "trend"),
+    [
+        (0.05, "rising"),
+        (0.021, "rising"),
+        (0.02, "steady"),
+        (0.0, "steady"),
+        (-0.02, "steady"),
+        (-0.021, "falling"),
+        (-0.3, "falling"),
+        (None, None),
+    ],
+)
+def test_trend_from_rate(rate, trend) -> None:
+    assert trend_from_rate(rate) == trend
 
 
 def test_rate_of_change_needs_an_hour_of_data() -> None:

@@ -198,10 +198,15 @@ async def test_levels_rate_uses_new_readings(hass, mock_config_entry) -> None:
     )
     client = AsyncMock()
     client.async_get_history.side_effect = lambda *_: [
-        Reading(base + timedelta(minutes=15 * i), 1.0) for i in range(5)
+        Reading(base + timedelta(minutes=15 * i), 1.0 + 0.15 * i) for i in range(5)
     ]
     client.async_get_stations_near.return_value = [
-        replace(station, latest_value=1.6, latest_time=base + timedelta(minutes=75))
+        replace(
+            station,
+            latest_value=1.75,
+            latest_time=base + timedelta(minutes=75),
+            trend_raw="Level Falling",
+        )
     ]
     coordinator = LevelsCoordinator(
         hass, mock_config_entry, client, LAT, LON, 15, ["4023"]
@@ -209,8 +214,10 @@ async def test_levels_rate_uses_new_readings(hass, mock_config_entry) -> None:
 
     data = await coordinator._async_update_data()
 
-    # 1.0m at 12:15 -> 1.6m at 13:15
+    # Rising 0.15 m every 15 minutes, from 12:15 to 13:15
     assert data["4023"].rate == pytest.approx(0.6)
+    # The trend follows the rate, not NRW's status
+    assert data["4023"].trend == "rising"
 
 
 async def test_levels_history_failure_is_not_fatal(hass, mock_config_entry) -> None:
@@ -224,6 +231,8 @@ async def test_levels_history_failure_is_not_fatal(hass, mock_config_entry) -> N
 
     assert data["4023"].station.latest_value is not None
     assert data["4023"].rate is None
+    # Without an hour of readings the trend falls back to NRW's status
+    assert data["4023"].trend == data["4023"].station.trend
 
 
 async def test_levels_auth_error(hass, mock_config_entry) -> None:
