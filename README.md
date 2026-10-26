@@ -94,9 +94,12 @@ The rate of change uses the readings from the last hour: from the newest
 reading at least an hour older than the latest, up to the latest. It is the
 median of the slopes between every pair of those readings (the
 [Theil–Sen estimator](https://en.wikipedia.org/wiki/Theil%E2%80%93Sen_estimator)),
-so a single wrong reading or a few millimetres of jitter barely move it. A
-sudden jump in only the newest reading counts once the next reading confirms
-it. The rate is unknown until there is an hour of readings.
+so with NRW's usual 15-minute readings (five in the hour) a single wrong
+reading or a few millimetres of jitter barely move it, and a sudden jump in
+only the newest reading counts once the next reading confirms it. When
+readings are missing and the hour holds fewer, one reading has more effect:
+with two, the rate is the plain difference between them. The rate is unknown
+until there is an hour of readings.
 
 The trend is `steady` while the rate is within ±0.02 m/h, otherwise `rising`
 or `falling`. Until there is an hour of readings it is NRW's own status,

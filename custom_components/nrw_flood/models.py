@@ -220,9 +220,10 @@ def rate_of_change(readings: list[Reading]) -> float | None:
 
     Uses the readings from the newest one at least an hour older than the
     latest, up to the latest. The rate is the median of the slopes between
-    every pair of those readings (the Theil-Sen estimator), so one wild reading
-    or a few millimetres of jitter barely move it. Returns None until there's
-    an hour of data.
+    every pair of those readings (the Theil-Sen estimator). With the usual five
+    readings in the hour, one wild reading or a few millimetres of jitter
+    barely move it; with fewer readings each one counts for more. Returns None
+    until there's an hour of data.
     """
     if not readings:
         return None

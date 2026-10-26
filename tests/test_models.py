@@ -199,6 +199,26 @@ def test_reading_jitter_does_not_flip_the_rate() -> None:
     assert 0 < rate < 0.02
 
 
+def test_a_jump_counts_once_the_next_reading_confirms_it() -> None:
+    start = datetime(2026, 10, 22, 12, 0, tzinfo=UTC)
+
+    assert rate_of_change(_readings(start, [1.0, 1.0, 1.0, 1.0, 1.3])) == 0.0
+    confirmed = _readings(start, [1.0, 1.0, 1.0, 1.0, 1.3, 1.3])
+    assert rate_of_change(confirmed) > 0.02
+
+
+def test_sparse_readings_give_each_reading_more_weight() -> None:
+    """With readings missing, the hour holds fewer points and one jump counts."""
+    start = datetime(2026, 10, 22, 12, 0, tzinfo=UTC)
+    sparse = [
+        Reading(start, 1.0),
+        Reading(start + timedelta(minutes=30), 1.0),
+        Reading(start + timedelta(minutes=60), 1.5),
+    ]
+
+    assert rate_of_change(sparse) == pytest.approx(0.5)
+
+
 @pytest.mark.parametrize(
     ("rate", "trend"),
     [
